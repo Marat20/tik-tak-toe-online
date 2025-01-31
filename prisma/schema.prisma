@@ -10,6 +10,7 @@ datasource db {
 model Game {
   id String @id @default(cuid())
   status GameStatus
+  field Json?
   players User[] @relation("games")
   winner User? @relation(fields: [winnerId], references: [id])
   winnerId String?
