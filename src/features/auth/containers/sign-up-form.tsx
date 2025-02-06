@@ -7,6 +7,7 @@ import { ErrorMessage } from "../ui/error-message";
 import { AuthFields } from "../ui/fields";
 import { BottomLink } from "../ui/link";
 import { SubmitButton } from "../ui/submit-button";
+import { routes } from "@/kernel/routes";
 
 export function SignUpForm() {
   const [formState, action, isPending] = useActionState(
@@ -26,7 +27,7 @@ export function SignUpForm() {
         <BottomLink
           text="Already have an account?"
           linkText="Sign in"
-          url="/sign-in"
+          url={routes.signIn()}
         />
       }
     />

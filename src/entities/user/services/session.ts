@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import "server-only";
 import { SessionEntity, UserEntity, userToSession } from "../domain";
+import { routes } from "@/kernel/routes";
 
 const secretKey = process.env.SESSION_SECRET;
 const encodedKey = new TextEncoder().encode(secretKey);
@@ -52,7 +53,7 @@ const verifySession = async () => {
   const session = await decrypt(cookie);
 
   if (session.type === "left") {
-    redirect("/sign-in");
+    redirect(routes.signIn());
   }
 
   return { isAuth: true, session: session.value };
