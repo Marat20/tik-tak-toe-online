@@ -1,9 +1,8 @@
-import { getGameById, surrenderGame } from "@/entities/game/server";
+import { gameEvents, getGameById, surrenderGame } from "@/entities/game/server";
 import { getCurrentUser } from "@/entities/user/server";
 import { GameId } from "@/kernel/ids";
 import { sseStream } from "@/shared/lib/sse/server";
 import { NextRequest } from "next/server";
-import { gameEvent } from "../services/game-events";
 
 export async function getGameStream(
   req: NextRequest,
@@ -24,17 +23,14 @@ export async function getGameStream(
 
   write(game);
 
-  const unwatch = await gameEvent.addListener(game.id, async (event) => {
+  const unwatch = await gameEvents.addGameChangedListener(game.id, (event) => {
     write(event.data);
-
-    const result = await surrenderGame(id, user);
-
-    if (result.type === "right") {
-      gameEvent.emit(result.value);
-    }
   });
 
-  addCloseListener(unwatch);
+  addCloseListener(async () => {
+    await surrenderGame(id, user);
+    unwatch();
+  });
 
   return response;
 }

@@ -1,10 +1,14 @@
 import { GameId } from "@/kernel/ids";
 import { left, right } from "@/shared/lib/either";
-import { PlayerEntity } from "../domain";
+import { doStep, PlayerEntity } from "../domain";
 import { gameRepository } from "../repositories/game";
 import { gameEvents } from "./game-events";
 
-export async function surrenderGame(gameId: GameId, player: PlayerEntity) {
+export async function stepGame(
+  gameId: GameId,
+  player: PlayerEntity,
+  index: number,
+) {
   const game = await gameRepository.getGame({ id: gameId });
 
   if (!game) {
@@ -19,11 +23,13 @@ export async function surrenderGame(gameId: GameId, player: PlayerEntity) {
     return left("player-is-not-in-game");
   }
 
-  const newGame = await gameRepository.saveGame({
-    ...game,
-    status: "gameOver",
-    winner: game.players.find((p) => p.id !== player.id)!,
-  });
+  const stepResult = doStep({ game, index, player });
+
+  if (stepResult.type === "left") {
+    return stepResult;
+  }
+
+  const newGame = await gameRepository.saveGame(stepResult.value);
 
   await gameEvents.emit({
     type: "game-changed",

@@ -10,7 +10,7 @@ export const createGameAction = async () => {
   const user = await getCurrentUser();
 
   if (!user) {
-    return left("user-not-found" as const);
+    return left("user-not-found");
   }
 
   const gameResult = await createGame(user);

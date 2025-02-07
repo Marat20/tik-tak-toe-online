@@ -3,7 +3,6 @@ import { getCurrentUser } from "@/entities/user/server";
 import { GameId } from "@/kernel/ids";
 import { routes } from "@/kernel/routes";
 import { redirect } from "next/navigation";
-import { gameEvent } from "../services/game-events";
 import { GameClient } from "./game-client";
 
 export async function Game({ gameId }: { gameId: GameId }) {
@@ -11,7 +10,7 @@ export async function Game({ gameId }: { gameId: GameId }) {
 
   let game = await getGameById(gameId);
 
-  if (!game) {
+  if (!game || !user) {
     redirect(routes.main());
   }
 
@@ -20,9 +19,8 @@ export async function Game({ gameId }: { gameId: GameId }) {
 
     if (startGameResult.type === "right") {
       game = startGameResult.value;
-      gameEvent.emit(startGameResult.value);
     }
   }
 
-  return <GameClient defaultGame={game} />;
+  return <GameClient defaultGame={game} player={user} />;
 }
