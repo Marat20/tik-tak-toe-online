@@ -1,6 +1,7 @@
 import { GameId } from "./ids";
 
 export const routes = {
+  main: () => `/`,
   signIn: () => `/sign-in`,
   signOut: () => `/sign-out`,
   signUp: () => `/sign-up`,
